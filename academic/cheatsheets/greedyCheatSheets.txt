@@ -293,3 +293,150 @@ If YES → Greedy works
 ==============================
 END
 ==============================
+
+############## plugNplay code #############
+
+#include <bits/stdc++.h>
+using namespace std;
+
+/* ================= FAST IO ================= */
+#define fastio() ios::sync_with_stdio(false); cin.tie(NULL)
+
+/* ================= 1. FRACTIONAL KNAPSACK ================= */
+// items = {value, weight}
+double fractionalKnapsack(int W, vector<pair<int,int>>& items){
+    sort(items.begin(), items.end(), [](pair<int,int> &a, pair<int,int> &b){
+        return (double)a.first/a.second > (double)b.first/b.second;
+    });
+
+    double profit = 0;
+
+    for(auto &it : items){
+        if(W >= it.second){
+            W -= it.second;
+            profit += it.first;
+        } else {
+            profit += it.first * (double)W / it.second;
+            break;
+        }
+    }
+    return profit;
+}
+
+/* ================= 2. ACTIVITY SELECTION ================= */
+// activities = {start, end}
+int activitySelection(vector<pair<int,int>>& a){
+    sort(a.begin(), a.end(), [](pair<int,int> &x, pair<int,int> &y){
+        return x.second < y.second;
+    });
+
+    int count = 1;
+    int last = a[0].second;
+
+    for(int i = 1; i < a.size(); i++){
+        if(a[i].first >= last){
+            count++;
+            last = a[i].second;
+        }
+    }
+    return count;
+}
+
+/* ================= 3. COIN CHANGE ================= */
+vector<int> coinChange(int V){
+    vector<int> coins = {1000,500,100,50,20,10,5,2,1};
+    vector<int> ans;
+
+    for(int c : coins){
+        while(V >= c){
+            V -= c;
+            ans.push_back(c);
+        }
+    }
+    return ans;
+}
+
+/* ================= 4. MINIMUM GAS STOPS ================= */
+vector<int> minStops(int D, int m, vector<int>& d){
+    vector<int> stops;
+    int curr = 0, last = -1;
+
+    for(int i = 0; i < d.size(); i++){
+        if(d[i] - curr <= m){
+            last = i;
+        } else {
+            if(last == -1) return {-1}; // impossible
+            stops.push_back(d[last]);
+            curr = d[last];
+            last = i;
+        }
+    }
+
+    if(D - curr > m) return {-1};
+    return stops;
+}
+
+/* ================= 5. MIN SWAPS (BRACKETS) ================= */
+int minSwaps(string s){
+    int left = 0, right = 0;
+    int imbalance = 0, swaps = 0;
+
+    for(char c : s){
+        if(c == '['){
+            left++;
+            if(imbalance > 0){
+                swaps += imbalance;
+                imbalance--;
+            }
+        } else {
+            right++;
+            imbalance = right - left;
+        }
+    }
+    return swaps;
+}
+
+/* ================= MAIN ================= */
+int main(){
+    fastio();
+
+    // ===== Example Usage (uncomment when needed) =====
+
+    // 1. Fractional Knapsack
+    /*
+    vector<pair<int,int>> items = {{60,10},{100,20},{120,30}};
+    cout << fractionalKnapsack(50, items) << "\n";
+    */
+
+    // 2. Activity Selection
+    /*
+    vector<pair<int,int>> activities = {{1,2},{3,4},{0,6},{5,7},{8,9},{5,9}};
+    cout << activitySelection(activities) << "\n";
+    */
+
+    // 3. Coin Change
+    /*
+    int V = 93;
+    vector<int> res = coinChange(V);
+    for(int x : res) cout << x << " ";
+    cout << "\n";
+    */
+
+    // 4. Minimum Gas Stops
+    /*
+    int D = 20, m = 10;
+    vector<int> d = {2,4,5,8,12,14,16,19};
+    vector<int> stops = minStops(D, m, d);
+    if(stops.size()==1 && stops[0]==-1) cout << "Impossible\n";
+    else for(int x : stops) cout << x << " ";
+    cout << "\n";
+    */
+
+    // 5. Min Swaps Brackets
+    /*
+    string s = "[]][][";
+    cout << minSwaps(s) << "\n";
+    */
+
+    return 0;
+}
