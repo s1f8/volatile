@@ -1,0 +1,295 @@
+==============================
+GREEDY
+==============================
+
+DEFINITION:
+- Always pick the best choice at current step (local optimum)
+- Hope it leads to global optimum
+- Works only for specific problems
+
+WHEN TO USE:
+- Optimization problems (max/min)
+- When choices don’t affect future decisions badly
+
+--------------------------------
+GENERAL GREEDY TEMPLATE
+--------------------------------
+1. Define greedy choice
+2. Sort (if needed)
+3. Pick best option
+4. Update state
+5. Repeat
+
+Time Complexity:
+- Usually O(n log n) (due to sorting)
+
+================================
+PROBLEM 1: FRACTIONAL KNAPSACK
+================================
+GOAL: Maximize profit
+
+GREEDY IDEA:
+- Pick item with highest (value/weight)
+
+STEPS:
+1. Compute ratio = v[i]/w[i]
+2. Sort descending by ratio
+3. Take full item if possible
+4. Else take fraction
+
+PSEUDOCODE:
+sort by v[i]/w[i] desc
+profit = 0
+
+for each item:
+    if W >= w[i]:
+        take full
+        W -= w[i]
+        profit += v[i]
+    else:
+        take fraction
+        profit += v[i] * (W/w[i])
+        break
+
+C++ CODE:
+--------------------------------
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Item {
+    int value, weight;
+};
+
+bool cmp(Item a, Item b){
+    return (double)a.value/a.weight > (double)b.value/b.weight;
+}
+
+double fractionalKnapsack(int W, vector<Item>& arr){
+    sort(arr.begin(), arr.end(), cmp);
+    double profit = 0.0;
+
+    for(auto &it : arr){
+        if(W >= it.weight){
+            W -= it.weight;
+            profit += it.value;
+        } else {
+            profit += it.value * ((double)W / it.weight);
+            break;
+        }
+    }
+    return profit;
+}
+--------------------------------
+
+================================
+PROBLEM 2: ACTIVITY SELECTION
+================================
+GOAL: Max number of non-overlapping activities
+
+GREEDY IDEA:
+- Pick activity with earliest finish time
+
+STEPS:
+1. Sort by finish time
+2. Pick first activity
+3. For next:
+   if start >= last_finish → select
+
+PSEUDOCODE:
+sort by finish time
+select first
+
+for i=1 to n:
+    if s[i] >= last_selected_finish:
+        select
+
+C++ CODE:
+--------------------------------
+#include <bits/stdc++.h>
+using namespace std;
+
+void activitySelection(vector<int>& s, vector<int>& f){
+    int n = s.size();
+    vector<pair<int,int>> a;
+
+    for(int i=0;i<n;i++)
+        a.push_back({f[i], s[i]});
+
+    sort(a.begin(), a.end());
+
+    int count = 1;
+    int last = a[0].first;
+
+    for(int i=1;i<n;i++){
+        if(a[i].second >= last){
+            count++;
+            last = a[i].first;
+        }
+    }
+
+    cout << count;
+}
+--------------------------------
+
+================================
+PROBLEM 3: COIN CHANGE (GREEDY)
+================================
+GOAL: Minimum coins
+
+GREEDY IDEA:
+- Use largest denomination first
+
+STEPS:
+1. Sort coins descending
+2. While V > 0:
+   pick largest coin <= V
+   subtract
+
+PSEUDOCODE:
+sort descending
+for coin in coins:
+    while V >= coin:
+        V -= coin
+        print coin
+
+NOTE:
+- Works only for canonical systems (like 1,2,5,...)
+
+C++ CODE:
+--------------------------------
+#include <bits/stdc++.h>
+using namespace std;
+
+void coinChange(int V){
+    vector<int> coins = {1000,500,100,50,20,10,5,2,1};
+
+    for(int c : coins){
+        while(V >= c){
+            cout << c << " ";
+            V -= c;
+        }
+    }
+}
+--------------------------------
+
+================================
+PROBLEM 4: MINIMUM GAS STOPS
+================================
+GOAL: Min stops to reach destination
+
+GREEDY IDEA:
+- Always go to farthest reachable station
+
+STEPS:
+1. Track current position
+2. Move to farthest station within range
+3. Stop only when necessary
+
+KEY CONDITION:
+if next_station - current > tank:
+    stop at last reachable
+
+TIME: O(n)
+
+C++ CODE:
+--------------------------------
+#include <bits/stdc++.h>
+using namespace std;
+
+void minStops(int D, int m, vector<int>& d){
+    int curr = 0, last = -1;
+
+    for(int i=0;i<d.size();i++){
+        if(d[i] - curr <= m){
+            last = i;
+        } else {
+            cout << "Stop at: " << d[last] << "\n";
+            curr = d[last];
+            last = i;
+        }
+    }
+
+    if(D - curr > m)
+        cout << "Cannot reach\n";
+}
+--------------------------------
+
+================================
+PROBLEM 5: MIN SWAPS (BRACKETS)
+================================
+GOAL: Balance string with min swaps
+
+IDEA:
+- Track imbalance of '[' and ']'
+
+OPTIMAL METHOD:
+countLeft, countRight, imbalance, swaps
+
+if '[':
+    countLeft++
+    if imbalance > 0:
+        swaps += imbalance
+        imbalance--
+
+if ']':
+    countRight++
+    imbalance = countRight - countLeft
+
+C++ CODE:
+--------------------------------
+#include <bits/stdc++.h>
+using namespace std;
+
+int minSwaps(string s){
+    int left = 0, right = 0;
+    int imbalance = 0, swaps = 0;
+
+    for(char c : s){
+        if(c == '['){
+            left++;
+            if(imbalance > 0){
+                swaps += imbalance;
+                imbalance--;
+            }
+        } else {
+            right++;
+            imbalance = right - left;
+        }
+    }
+    return swaps;
+}
+--------------------------------
+
+================================
+COMMON GREEDY PATTERNS
+================================
+1. Sort + pick best
+2. Earliest finish time
+3. Highest ratio/value
+4. Largest/smallest first
+5. Farthest reachable
+
+--------------------------------
+
+================================
+WHEN GREEDY FAILS
+================================
+- 0/1 Knapsack ❌
+- Requires DP when:
+  - overlapping subproblems
+  - future choices depend on current
+
+--------------------------------
+
+================================
+QUICK CHECKLIST
+================================
+✔ Can I make local best choice?
+✔ Does it guarantee global best?
+✔ Can I prove correctness?
+
+If YES → Greedy works
+
+==============================
+END
+==============================
