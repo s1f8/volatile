@@ -47,7 +47,7 @@ int longestPalindrome(string s) {
 }
 
 
-problem:2
+##################### problem:2
 Given an integer array nums of 2n integers, group these integers into n pairs (a1, b1), (a2, b2), ..., (an, bn) such that the sum of min(ai, bi) for all i is maximized. Return the maximized sum.
 
  
@@ -98,4 +98,44 @@ int arrayPairSum(vector<int>& nums) {
 int main() {
     vector<int> nums = {1,4,3,2};
     cout << arrayPairSum(nums); // 4
+}
+
+
+############ activity selection:
+
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int activitySelection(vector<int> &start, vector<int> &finish) {
+    int n = start.size();
+    int ans = 0;
+
+    // Min heap: (finish, start)
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+    for (int i = 0; i < n; i++) {
+        pq.push({finish[i], start[i]});
+    }
+
+    int lastEnd = -1;
+
+    while (!pq.empty()) {
+        auto [end, st] = pq.top();
+        pq.pop();
+
+        if (st >= lastEnd) {
+            ans++;
+            lastEnd = end;
+        }
+    }
+
+    return ans;
+}
+
+int main() {
+    vector<int> start = {1, 3, 0, 5, 8, 5};
+    vector<int> finish = {2, 4, 6, 7, 9, 9};
+
+    cout << activitySelection(start, finish); // 4
 }
