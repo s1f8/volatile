@@ -54,7 +54,7 @@ void setup() {
     delay(2000);
     Serial.println();
     Serial.println("=================================");
-    Serial.println("ESP32 MPU6050 DMP TEAPOT");
+    Serial.println("Teapot orientation");
     Serial.println("=================================");
     //i2c
     Wire.begin(21, 22);
