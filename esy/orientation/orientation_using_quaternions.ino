@@ -7,6 +7,7 @@
     better remove the testing code of mpu connection.
     using example code of mpu6050 lib of electronic cats for teapot 3d orientation
     using jrowbergs library
+    simple convensional sensor fusion
 */
 
 #include <Wire.h>
